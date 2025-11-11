@@ -1,0 +1,201 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "asdf",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -288,
+        16
+      ],
+      "id": "36111218-552c-453d-8b3a-17015822d9df",
+      "name": "Webhook",
+      "webhookId": "722d2870-c40b-4d01-9510-a79671d1246d"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.data }}",
+        "options": {
+          "responseCode": "={{ $json.httpCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        784,
+        304
+      ],
+      "id": "e13c0be3-12b5-4823-8ae1-54b925ff0dda",
+      "name": "402 error"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"message\": \"here you can return anything you want as the webhook response\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        784,
+        0
+      ],
+      "id": "6d0b8dc9-2d28-4b75-bff4-93c2c5a334cd",
+      "name": "After payment success"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        320,
+        -192
+      ],
+      "id": "151d25db-f1f8-4389-b1ad-c022dfba2895",
+      "name": "Replace this with a flow you want to monetize"
+    },
+    {
+      "parameters": {
+        "payTo": "0x40d976d0d55b56e253e8083b33a240189b2b1148"
+      },
+      "type": "CUSTOM.x402Config",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        16
+      ],
+      "id": "0c037608-25d5-4a95-a9ab-aeac657aeeb6",
+      "name": "X402 Config"
+    },
+    {
+      "parameters": {
+        "payTo": "={{ $json.payTo }}",
+        "facilitatorUrl": "={{ $json.facilitatorUrl }}",
+        "price": "={{ $json.price }}",
+        "network": "={{ $json.network }}",
+        "resourceUrl": "={{ $('Webhook').item.json.webhookUrl }}",
+        "xPaymentHeader": "={{ $('Webhook').item.json.headers['x-payment'] }}"
+      },
+      "type": "CUSTOM.x402Verify",
+      "typeVersion": 1,
+      "position": [
+        96,
+        16
+      ],
+      "id": "da19849f-d2df-46e1-a23a-cd27ef058ce9",
+      "name": "X402 Verify"
+    },
+    {
+      "parameters": {
+        "payTo": "={{ $('X402 Config').item.json.payTo }}",
+        "facilitatorUrl": "={{ $('X402 Config').item.json.facilitatorUrl }}",
+        "price": "={{ $('X402 Config').item.json.price }}",
+        "network": "={{ $('X402 Config').item.json.network }}",
+        "resourceUrl": "={{ $('Webhook').item.json.webhookUrl }}",
+        "xPaymentHeader": "={{ $('Webhook').item.json.headers['x-payment'] }}"
+      },
+      "type": "CUSTOM.x402Settle",
+      "typeVersion": 1,
+      "position": [
+        544,
+        16
+      ],
+      "id": "11931a40-d2b2-473d-9340-9d5a5094ded9",
+      "name": "X402 Settle"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "X402 Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "402 error": {
+      "main": [
+        []
+      ]
+    },
+    "Replace this with a flow you want to monetize": {
+      "main": [
+        [
+          {
+            "node": "X402 Settle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "X402 Config": {
+      "main": [
+        [
+          {
+            "node": "X402 Verify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "X402 Verify": {
+      "main": [
+        [
+          {
+            "node": "Replace this with a flow you want to monetize",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "402 error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "X402 Settle": {
+      "main": [
+        [
+          {
+            "node": "After payment success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "402 error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d949e98e-8b92-40a6-9948-a35971542406",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8bcedb7a8af12e89a0cdce6a10b18ddaeb44ccf8f1304fd8c340f5d3aacf809f"
+  },
+  "id": "ZarlgXqF4HSXNBkK",
+  "tags": []
+}
