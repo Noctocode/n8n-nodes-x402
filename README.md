@@ -50,4 +50,4 @@ Check the [x402 docs](https://x402.gitbook.io/x402) for more info on how to conf
 
 ## Version history
 
-latest version: `0.1.0`
+latest version: `0.1.1`
