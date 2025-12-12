@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {
-        "path": "asdf",
+        "path": "custom-path",
         "responseMode": "responseNode",
         "options": {}
       },
